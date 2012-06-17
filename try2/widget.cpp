@@ -30,7 +30,7 @@
 using namespace std;
 
 void addwatch(int, char*, int);
-static int filter_action(uint32_t mask);
+static int filter_action(inotify_event *event);
 int watch_init(int mask, char *root);
 void addwatch(int fd, char *dir, int mask);
 static void do_action(int fd, struct inotify_event *event);
@@ -128,6 +128,7 @@ void addwatch(int fd, char *dir, int mask)
                         sprintf(subdir, "%s/%s", dir, dent->d_name);
                         addwatch(fd, subdir, mask);
                         printf("addwatch %s\n",subdir);
+                        fflush(stdout);
                 }
         }
 
@@ -176,15 +177,14 @@ enum{NEWDIR = IN_CREATE | IN_ISDIR};
 
 static void do_action(int fd, struct inotify_event *event)
 {
-        int ia, i;
+        int  i;
 
-        if ((ia = filter_action(event->mask)) < 0)
+        if ((filter_action(event)) < 0)
                 return;
-
         if ((event->mask & NEWDIR) == NEWDIR)
                 append_dir(fd, event, MASK);
 
-        send_mess(event->name, action[ia], event->wd);
+       //send_mess(event->name, action[ia], event->wd);
 }
 
 void append_dir(int fd, struct inotify_event *event, int mask)
@@ -197,7 +197,7 @@ void append_dir(int fd, struct inotify_event *event, int mask)
         wd = inotify_add_watch(fd, ndir, mask);
         dirset.insert(make_pair(wd, string(ndir)));
 }
-
+/*
 static int filter_action(uint32_t mask)
 {
         if (mask & IN_MODIFY)
@@ -208,9 +208,44 @@ static int filter_action(uint32_t mask)
                 return 2;
         if (mask & IN_DELETE)
                 return 3;
+        if (mask & IN_MOVED_FROM)
+        {
+            printf("change name");
+            fflush(stdout);
+            return 4;
+        }
         return -1;
 }
+*/
+static int filter_action(struct inotify_event *event)
+{
+    QSqlQuery query;
 
+        if (event->mask & IN_MODIFY)
+                return 1;
+        if (event->mask & IN_ACCESS)
+                return 1;
+        if (event->mask & IN_CREATE)
+                return 1;
+        if (event->mask & IN_DELETE)
+        {
+            printf("%s have been deleted!",event->name);
+            fflush(stdout);
+            QString name=QString::fromLocal8Bit(event->name,30);
+            QString sql="delete from test WHERE symlinkdirectory = "+name;
+            //strcat(sql,event->name);
+            query.exec(sql);
+            //on_pushButtonrefresh_clicked();
+            return 1;
+        }
+        if (event->mask & IN_MOVED_FROM)
+        {
+            printf("%s change name!\n",event->name);
+            fflush(stdout);
+            return 1;
+        }
+        return -1;
+}
 static void send_mess(char *name, char *act, int ewd)
 {
         char format[] = "%s was %s.\n";
@@ -219,9 +254,12 @@ static void send_mess(char *name, char *act, int ewd)
         sprintf(file, "%s/%s", dirset.find(ewd)->second.c_str(), name);
 
         printf(format, file, act);
+        fflush(stdout);
 }
 
 void scan_dir(const char *directory, const char *dest) {
+
+
     DIR *dp;
     struct dirent *ptr;
     struct stat statbuf;
@@ -232,6 +270,7 @@ void scan_dir(const char *directory, const char *dest) {
     }
     chdir(directory);
     int mknewdir;
+    printf("%s\n",dest);
     mknewdir = mkdir(dest, 0777);
     while ((ptr = readdir(dp)) != NULL) {
         lstat(ptr->d_name, &statbuf);
@@ -306,8 +345,8 @@ void scan_dir(const char *directory, const char *dest) {
                         char douhao[] = ","; //同上，只是给字符串后面加上逗号
                         char danyinhao[] = "'"; //同上，只是给字符串后面加上单引号
                         char sqlinsert[200]; //输入到sql中的insert命令
-                        char formerinsert[] = "insert into test values('','"; //输入的sql命令字符串前缀
-                        char find[200] = "select count(*) from test where abs-directory='";
+                        char formerinsert[] = "INSERT INTO test VALUES('0','"; //输入的sql命令字符串前缀
+                        char find[200] = "select count(*) from test where absdirectory='";
                         strcpy(sqlinsert, formerinsert);
                         strcat(sqlinsert, dirnow);
                         strcat(sqlinsert, danyinhao);
@@ -316,9 +355,23 @@ void scan_dir(const char *directory, const char *dest) {
                         strcat(sqlinsert, dirthen);
                         strcat(sqlinsert, danyinhao);
                         strcat(sqlinsert, youkuohao); //现在的sqlinsert完整了
-                        //sprintf(sql, sqlinsert);
                         strcat(find, dirnow);
                         strcat(find, danyinhao);
+                        int strsize=strlen(sqlinsert);
+                        QString insertsql = QString::fromLocal8Bit(sqlinsert,strsize);
+                        insertsql.trimmed();
+                        QString findsql=QString::fromLocal8Bit(find,200);
+                        QSqlQuery query;
+                        //query.exec(findsql);
+                        //query.next();
+                        //int findnum = query.value(0).toInt();
+                       // if(findnum<=0){
+                        //qDebug() << insertsql;
+                        query.exec(insertsql);
+                       // }
+                        //query.exec("SELECT * FROM test");
+                        //sprintf(sql, sqlinsert);
+
 
 
                     }
@@ -343,14 +396,14 @@ void Widget::on_pushButtoncreate_clicked()
     db.setHostName("localhost");
     db.setDatabaseName("test");
     db.setUserName("root");
-    db.setPassword("tiancaihuo");
+    db.setPassword("xtloving");
     if (!db.open())
          qDebug() << "Failed to connect to root mysql admin";
     else
          std::cout<<"succeed!"<<std::endl;
 
     QSqlQuery query;
-    //query.exec("INSERT INTO test VALUES('','sss','sss')");
+    query.exec("delete from test");
     query.exec("SELECT * FROM test");
 
     while(query.next())
@@ -363,20 +416,34 @@ void Widget::on_pushButtoncreate_clicked()
     }
 
 
-    /*QString change1 = ui->lineEdityuanmulu->text();
-    QString change2 = ui->lineEditmubiaomulu->text();
-    const char* strchange1 = change1.toAscii().constData();
-    const char* strchange2 = change2.toAscii().constData();
-
+    QString change1 = ui->lineEdityuanmulu->text();
+    QString change2 = ui->lineEditmubiaomulu->text() + "/mp3";
+    //const char* strchange1 = change1.toAscii().constData();
+    //const char* strchange2 = change2.toAscii().constData();
+    QByteArray ba = change1.toLatin1();
+    const char *strchange1 = ba.data();
+    //const char* strchange2 = change2.toAscii().constData();
+    QByteArray ba2 = change2.toLatin1();
+    const char *strchange2 = ba2.data();
     scan_dir(strchange1, strchange2);
-    int fd;
+    fflush(stdout);
 
+    /*
     char *dest = const_cast<char*>(strchange2);
     strcat(dest,"/mp3");
     fd=watch_init(MASK,dest);
-    watch_mon(fd);*/
-
-
+    watch_mon(fd);
+    */
+    pid_t pid;
+    if((pid=fork())<0)
+        printf("Fork error!");
+    else if(pid==0){
+    int fd;
+    char *dest = const_cast<char*>(strchange2);
+    //strcat(dest,"/mp3");
+    fd=watch_init(MASK,dest);
+    watch_mon(fd);
+    }
 
 
     //ui->lineEditmubiaomulu->setText(ui->lineEditmubiaomulu->text() + "/mp3");
@@ -402,7 +469,7 @@ void Widget::on_pushButtonGetIDV3_clicked()
     QSqlQuery query;
     //query.exec("INSERT INTO test VALUES('','sss','sss')");
     //query.exec("SELECT * FROM test");
-    QString selectedfromdb = "SELECT asbdirectory FROM test WHERE symlinkdirectory = '" + selectedfilepath + "'";
+    QString selectedfromdb = "SELECT absdirectory FROM test WHERE symlinkdirectory = '" + selectedfilepath + "'";
     query.exec(selectedfromdb);
     query.next();
     QString selectedasbd = query.value(0).toString();
@@ -444,7 +511,7 @@ void Widget::on_pushButtonDelete_clicked()
     QSqlQuery query;
     //query.exec("INSERT INTO test VALUES('','sss','sss')");
     //query.exec("SELECT * FROM test");
-    QString selectedfromdb = "SELECT asbdirectory FROM test WHERE symlinkdirectory = '" + selectedfilepath + "'";
+    QString selectedfromdb = "SELECT absdirectory FROM test WHERE symlinkdirectory = '" + selectedfilepath + "'";
     query.exec(selectedfromdb);
     query.next();
     QString selectedasbd = query.value(0).toString();
@@ -479,7 +546,7 @@ void Widget::on_pushButtonChIDV3_clicked()
     QSqlQuery query;
     //query.exec("INSERT INTO test VALUES('','sss','sss')");
     //query.exec("SELECT * FROM test");
-    QString selectedfromdb = "SELECT asbdirectory FROM test WHERE symlinkdirectory = '" + selectedfilepath + "'";
+    QString selectedfromdb = "SELECT absdirectory FROM test WHERE symlinkdirectory = '" + selectedfilepath + "'";
     query.exec(selectedfromdb);
     query.next();
     QString selectedasbd = query.value(0).toString();
@@ -546,7 +613,7 @@ void Widget::on_pushButtonChIDV3_clicked()
 void Widget::on_pushButtoncopy_clicked()
 {
     QSqlQuery query;
-    QString selectedfromdb = "SELECT asbdirectory,symlinkdirectory FROM test";
+    QString selectedfromdb = "SELECT absdirectory,symlinkdirectory FROM test";
     QString selectedasbd;
     QString symlinkdir;
     query.exec(selectedfromdb);
@@ -594,6 +661,4 @@ void Widget::on_pushButtoncopy_clicked()
         fclose(pFile);
 
     }
-
-
 }
