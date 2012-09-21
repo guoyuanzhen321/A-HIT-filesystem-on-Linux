@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/bg"
+    android:gravity="center_vertical"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dip" >
+
+        <TextView
+            android:id="@+id/file_path_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:text="@string/file_path"
+            android:textColor="@color/yellow"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/filepath"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/file_path_info"
+            android:textColor="@color/yellow"
+            android:textSize="14sp" />
+    </RelativeLayout>
+
+    <ImageSwitcher
+        android:id="@+id/switcher"
+        android:layout_width="270dp"
+        android:layout_height="360dp"
+        android:layout_below="@+id/filepath"
+        android:layout_centerInParent="true" />
+
+    <com.FFV.shareyourgoods.gallery.GalleryFlow
+        android:id="@+id/mygallery"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerInParent="true"
+        android:gravity="center_vertical" />
+
+</RelativeLayout>

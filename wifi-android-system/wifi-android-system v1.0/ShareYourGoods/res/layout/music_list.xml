@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent" 
+	android:id="@+id/musicListLayout"
+	android:orientation="horizontal" 
+	android:layout_height="50sp" android:weightSum="1">
+	
+	<!-- 歌曲编号 -->
+    <TextView 
+    	android:id="@+id/songNum" 
+    	android:layout_width="40sp" 
+    	android:textSize="15sp" 
+    	android:layout_height="32dp" 
+    	android:layout_gravity="left" 
+    	android:text="100" 
+    	android:gravity="top" 
+    	android:textColor="@color/yellow"/>
+	
+		
+	<!-- 歌曲名称 -->
+	<TextView 
+		android:id="@+id/songName" 
+		android:text="TextView"
+		android:layout_width="0dp" 
+		android:gravity="left" 
+		android:textSize="15sp" 
+	    android:layout_height="32dp" 
+	    android:layout_weight="0.92"
+	    android:textColor="@color/yellow"/>
+		
+	<!-- 歌曲时间 -->
+	<TextView 
+		android:id="@+id/songTime" 
+		android:text="00:00"
+		android:layout_width="40sp" 
+		android:layout_gravity="right" 
+		android:textSize="15sp" 
+		android:layout_height="32dp"
+		android:textColor="@color/yellow"/>
+
+</LinearLayout>

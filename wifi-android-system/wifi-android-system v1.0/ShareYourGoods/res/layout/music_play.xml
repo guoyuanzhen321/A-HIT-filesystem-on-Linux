@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/main_background"
+    android:orientation="vertical" > <!-- 定义主界面背景 -->
+
+    <RelativeLayout
+        android:id="@+id/mPlayerLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="90sp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true" >
+
+        <!-- 定义左上部 -->
+
+        <FrameLayout
+            android:id="@+id/album_frameLayout"
+            android:layout_width="90sp"
+            android:layout_height="90sp"
+            android:layout_alignParentBottom="true" >
+
+            <!-- 定义专辑音乐图标 -->
+
+            <ImageView
+                android:id="@+id/album_imageView"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:layout_margin="10sp"
+                android:background="@drawable/album" />
+        </FrameLayout>
+
+        <!-- 定义右上部 -->
+
+        <LinearLayout
+            android:id="@+id/mPlayerlinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/album_frameLayout"
+            android:orientation="vertical" >
+
+            <!-- 定义上部文字 -->
+
+            <TextView
+                android:id="@+id/mText"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10sp"
+                android:layout_marginRight="20sp"
+                android:layout_marginTop="10dip"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:singleLine="true"
+                android:text="音乐你的移动生活！" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout2"
+                android:layout_width="fill_parent"
+                android:layout_height="26sp"
+                android:orientation="horizontal" >
+
+                <!-- 定义进度条 ，第二三项分别定义进度条图片和拖动滑片的图片 -->
+
+                <SeekBar
+                    android:id="@+id/mseekBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="10dip"
+                    android:layout_weight="3"
+                    android:background="@drawable/progressbar_outline"
+                    android:progressDrawable="@drawable/seekbar_style"
+                    android:thumb="@drawable/progress_dot" />
+
+                <!-- 定义播放时间文本 -->
+
+                <TextView
+                    android:id="@+id/play_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|right"
+                    android:layout_marginLeft="5dip"
+                    android:layout_marginRight="10sp"
+                    android:gravity="right"
+                    android:text="00:00" />
+            </LinearLayout>
+
+            <!-- 定义一组按钮 -->
+
+            <LinearLayout
+                android:id="@+id/linearLayout3"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <!-- 定义上一首按钮 -->
+
+                <ImageButton
+                    android:id="@+id/pre_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/selector_music_btn"
+                    android:src="@drawable/player_pre" />
+
+                <!-- 定义播放按钮 -->
+
+                <ImageButton
+                    android:id="@+id/play_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/selector_music_btn"
+                    android:src="@drawable/player_play" />
+
+                <!-- 定义下一首按钮 -->
+
+                <ImageButton
+                    android:id="@+id/next_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@id/play_button"
+                    android:layout_weight="1"
+                    android:background="@drawable/selector_music_btn"
+                    android:src="@drawable/player_next" />
+
+                <!-- 定义声音按钮 -->
+
+
+                <!-- 定义播放模式按钮 -->
+
+                <ImageButton
+                    android:id="@+id/playMode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@drawable/selector_mode_set"
+                    android:padding="5px"
+                    android:src="@drawable/mode_list_loop" />
+            </LinearLayout>
+        </LinearLayout>
+    </RelativeLayout>
+    <!-- 上部定义完毕 -->
+
+
+    <!-- 定义界面下部 -->
+
+    <RelativeLayout
+        android:id="@+id/listLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/mPlayerLayout" >
+
+        <TabHost
+            android:id="@+id/tabhost"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_alignParentLeft="true" >
+
+            <LinearLayout
+                android:id="@+id/linearLayout1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical" >
+
+                <!-- 定义一个切换卡 -->
+
+                <TabWidget
+                    android:id="@android:id/tabs"
+                    android:layout_width="match_parent"
+                    android:layout_height="30sp" />
+
+                <FrameLayout
+                    android:id="@android:id/tabcontent"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" >
+
+                    <!-- 定义我的音乐选项卡 -->
+
+                    <LinearLayout
+                        android:id="@+id/musicTab"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" >
+
+                        <ListView
+                            android:id="@+id/mlistView"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_alignParentLeft="true" />
+                    </LinearLayout>
+
+                    <!-- 定义歌曲详细信息选项卡 -->
+
+                    <RelativeLayout
+                        android:id="@+id/lrcTab"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" >
+
+                        <!-- !!!!!!!!!!!!!!!!!!!!!! -->
+
+                        <ImageView
+                            android:id="@+id/imageView1"
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:layout_alignParentTop="true"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginTop="22dp"
+                            android:src="@drawable/album" />
+
+                        <TextView
+                            android:id="@+id/musicname"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_below="@+id/imageView1"
+                            android:layout_marginLeft="50dp"
+                            android:layout_marginTop="18dp"
+                            android:text="TextView"
+                            android:textColor="@color/yellow"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/musicsinger"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignLeft="@+id/musicname"
+                            android:layout_below="@+id/musicname"
+                            android:textColor="@color/yellow"
+                            android:text="TextView"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/musicalbum"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignLeft="@+id/musicsinger"
+                            android:layout_below="@+id/musicsinger"
+                            android:text="TextView"
+                            android:textColor="@color/yellow"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/musicsize"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignLeft="@+id/musicalbum"
+                            android:layout_below="@+id/musicalbum"
+                            android:text="TextView"
+                            android:textColor="@color/yellow"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/musicpath"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignLeft="@+id/musicsize"
+                            android:layout_below="@+id/musicsize"
+                            android:text="TextView"
+                            android:textColor="@color/yellow"
+                            android:textSize="15sp" />
+                    </RelativeLayout>
+                </FrameLayout>
+            </LinearLayout>
+        </TabHost>
+    </RelativeLayout>
+
+</RelativeLayout>
